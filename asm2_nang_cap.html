@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tea Station - Menu Thức Uống</title>
+    
+    <!-- Google Fonts: Inter & Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tea-green': {
+                            50: '#f4f7f3',
+                            100: '#eef2ed',
+                            200: '#d5e0d1',
+                            500: '#6c8b5e',
+                            700: '#4b633f',
+                            900: '#2e3d26',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'serif': ['"Playfair Display"', 'serif'],
+                    }
+                }   
+            }
+        }
+    </script>
+
+    <style>
+        /* ==================== 1. CÀI ĐẶT CHUNG & RESET ==================== */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: #f8faf7;
+            margin: 0;
+            padding: 0;
+            padding-top: 76px;
+            color: #2e3d26;
+        }
+
+        /* ==================== 2. DẢI ƯU ĐÃI (PROMO STRIP) ==================== */
+        .promo-strip {
+            width: 100%;
+            background: linear-gradient(180deg, #eef2ed 0%, #f8faf7 100%);
+            border-bottom: 1px solid #d5e0d1;
+            padding: 24px 0;
+        }
+
+        .promo-list {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px 10px 15px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+        }
+
+        .promo-card {
+            flex: 0 0 180px;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            color: #2e3d26;
+            scroll-snap-align: start;
+            background: white;
+            padding: 16px 12px;
+            border-radius: 20px;
+            border: 2px solid transparent;
+            box-shadow: 0 4px 15px rgba(46, 61, 38, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .promo-card:hover, .promo-card.active {
+            transform: translateY(-6px);
+            border-color: #6c8b5e;
+            box-shadow: 0 12px 24px rgba(75, 99, 63, 0.15);
+            background-color: #ffffff;
+        }
+
+        .promo-card img {
+            display: block;
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            border: 3px solid #eef2ed;
+            transition: transform 0.35s ease, border-color 0.35s ease;
+        }
+
+        .promo-card:hover img, .promo-card.active img {
+            transform: scale(1.08) rotate(3deg);
+            border-color: #6c8b5e;
+        }
+
+        .promo-card span {
+            display: block;
+            color: #2e3d26;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .promo-card small {
+            display: block;
+            color: #6c8b5e;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* ==================== 3. MAIN & DANH SÁCH THỰC ĐƠN ==================== */
+        main {
+            padding: 40px 10px 60px; 
+            max-width: 1200px; 
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            color: #2e3d26;
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #4b633f, #8FBC8F);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        .filter-bar {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 25px 0 35px;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1.5px solid #d5e0d1;
+            background-color: white;
+            color: #4b633f;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #6c8b5e;
+            background-color: #eef2ed;
+        }
+
+        .filter-btn.active {
+            background-color: #4b633f;
+            color: white;
+            border-color: #4b633f;
+            box-shadow: 0 4px 12px rgba(75, 99, 63, 0.3);
+        }
+        
+        .menu-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+        }
+        
+        .drink-item {
+            background-color: white;
+            border: 1px solid #e5ece2;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .drink-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 30px rgba(46, 61, 38, 0.12);
+            border-color: #6c8b5e;
+        }
+
+        .drink-img-wrapper {
+            width: 100%;
+            height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .drink-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .drink-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .quick-view-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(46, 61, 38, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .drink-img-wrapper:hover .quick-view-overlay {
+            opacity: 1;
+        }
+
+        .quick-view-overlay span {
+            background: white;
+            color: #2e3d26;
+            padding: 8px 16px;
+            border-radius: 99px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .drink-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2e3d26;
+            margin: 4px 0;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .drink-name:hover {
+            color: #6c8b5e;
+        }
+
+        .drink-short-desc {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .drink-price {
+            color: #d9534f;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-detail {
+            flex: 1;
+            padding: 9px 12px;
+            border-radius: 10px;
+            border: 1.5px solid #6c8b5e;
+            background: transparent;
+            color: #4b633f;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-detail:hover {
+            background: #eef2ed;
+        }
+
+        .btn-add-cart {
+            flex: 1.3;
+            padding: 9px 12px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #6c8b5e, #4b633f);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(75, 99, 63, 0.25);
+        }
+
+        .btn-add-cart:hover {
+            background: linear-gradient(135deg, #4b633f, #2e3d26);
+            transform: translateY(-1px);
+        }
+
+        .btn-add-cart:active {
+            transform: scale(0.96);
+        }
+        
+        .nhan-hot {
+            position: absolute;
+            top: 26px;
+            left: 26px;
+            z-index: 10;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 99px;
+            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.35);
+            animation: pulseBadge 2s infinite;
+        }
+
+        @keyframes pulseBadge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+
+        /* ==================== 4. MODAL CHI TIẾT SẢN PHẨM ==================== */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.65);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-backdrop.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background: white;
+            width: 100%;
+            max-width: 760px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            transform: translateY(20px) scale(0.97);
+            transition: transform 0.3s ease;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-backdrop.show .modal-box {
+            transform: translateY(0) scale(1);
+        }
+
+        .option-pill {
+            cursor: pointer;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 7px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .option-pill.selected {
+            border-color: #4b633f;
+            background-color: #eef2ed;
+            color: #2e3d26;
+            font-weight: 700;
+        }
+
+        /* ==================== 5. FOOTER (CHÂN TRANG) ==================== */
+        .footer-wrapper {
+            background-color: #24332c;
+            width: 100%;
+            border-top: 4px solid #6c8b5e;
+        }
+        
+        .footer-content {
+            max-width: 1200px; 
+            margin: 0 auto;
+            color: white;
+            padding: 40px 10px; 
+            display: flex;
+            justify-content: space-between; 
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .contact-info {
+            max-width: 450px;
+        }
+        
+        .contact-info h3 {
+            color: #8FBC8F;
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+        
+        .contact-info p {
+            line-height: 1.8;
+            margin: 8px 0;
+            font-size: 15px;
+            color: #e2e8f0;
+        }
+        
+        .map-container iframe {
+            border: 5px solid #6c8b5e;
+            border-radius: 18px;
+            width: 380px;
+            max-width: 100%;
+            height: 240px;
+            background-color: #e0e0e0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        }
+
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast-msg {
+            background: #2e3d26;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-left: 5px solid #8FBC8F;
+            animation: slideInRight 0.3s ease forwards;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 600px) {
+            .promo-list {
+                justify-content: flex-start;
+                gap: 14px;
+            }
+            .promo-card {
+                flex-basis: 140px;
+                padding: 12px 8px;
+            }
+            .promo-card img {
+                width: 85px;
+                height: 85px;
+            }
+            .promo-card span {
+                font-size: 13px;
+            }
+            .section-title {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== HEADER ==================== -->
+    <header class="fixed w-full top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-tea-green-100">
+        <div class="max-w-[1200px] mx-auto px-[10px]"> 
+            <div class="flex justify-between items-center py-3.5"> 
+                
+                <a href="#" class="flex-shrink-0 flex items-center gap-2.5 cursor-pointer group">
+                    <div class="w-10 h-10 rounded-xl bg-tea-green-100 flex items-center justify-center group-hover:bg-tea-green-500 transition-colors">
+                        <svg class="w-6 h-6 text-tea-green-700 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.625 4.39C16.48 2.76 14.54 1.5 12 1.5c-4.42 0-8 3.58-8 8 0 2.5 1.13 4.67 2.85 6.13L2.3 20.18l1.41 1.41 4.54-4.54C9.56 21.6 10.74 22 12 22c4.42 0 8-3.58 8-8 0-4.04-2.99-7.38-6.375-8.39l-1.375 2.19c2.14.73 3.75 2.74 3.75 5.2 0 3.03-2.47 5.5-5.5 5.5s-5.5-2.47-5.5-5.5c0-1.87 0.94-3.52 2.37-4.5l6.33-10.11z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-serif text-2xl font-bold text-tea-green-900 tracking-wide block leading-none">Tea Station</span>
+                        <span class="text-[11px] text-tea-green-500 font-medium tracking-wider uppercase">Fresh & Authentic</span>
+                    </div>
+                </a>
+
+                <div class="hidden lg:flex items-center bg-tea-green-50 border border-tea-green-200 rounded-full px-4 py-1.5 w-72 focus-within:border-tea-green-500 focus-within:ring-2 focus-within:ring-tea-green-100 transition-all">
+                    <svg class="w-4 h-4 text-tea-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input id="searchInput" type="text" placeholder="Tìm trà sữa, cà phê, nước ép..." class="bg-transparent text-sm w-full focus:outline-none text-tea-green-900 placeholder-tea-green-500/70" oninput="handleSearch(this.value)">
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <nav class="hidden md:flex space-x-7">
+                        <a href="#" class="text-tea-green-900 font-semibold hover:text-tea-green-500 transition-colors">Trang chủ</a>
+                        <a href="#promo" class="text-tea-green-900 font-semibold hover:text-tea-green-500 transition-colors">Ưu đãi</a>
+                        <a href="#menu" class="text-tea-green-900 font-semibold hover:text-tea-green-500 transition-colors">Thực đơn</a>
+                        <a href="#contact" class="text-tea-green-900 font-semibold hover:text-tea-green-500 transition-colors">Liên hệ</a>
+                    </nav>
+
+                    <button onclick="toggleCartDrawer(true)" class="relative flex items-center gap-2 bg-tea-green-700 hover:bg-tea-green-900 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all shadow-sm hover:shadow">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <span>Giỏ hàng</span>
+                        <span id="cartCountBadge" class="bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                    </button>
+
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-tea-green-900 hover:bg-tea-green-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="mobileMenu" class="hidden md:hidden pb-4 pt-2 border-t border-tea-green-100 space-y-2">
+                <input type="text" placeholder="Tìm món nước..." class="w-full px-3 py-2 rounded-lg border border-tea-green-200 text-sm mb-2" oninput="handleSearch(this.value)">
+                <a href="#" onclick="toggleMobileMenu()" class="block py-1.5 font-semibold text-tea-green-900">Trang chủ</a>
+                <a href="#promo" onclick="toggleMobileMenu()" class="block py-1.5 font-semibold text-tea-green-900">Ưu đãi nổi bật</a>
+                <a href="#menu" onclick="toggleMobileMenu()" class="block py-1.5 font-semibold text-tea-green-900">Thực đơn</a>
+                <a href="#contact" onclick="toggleMobileMenu()" class="block py-1.5 font-semibold text-tea-green-900">Liên hệ</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== DẢI ƯU ĐÃI ==================== -->
+    <section id="promo" class="promo-strip" aria-label="Ưu đãi nổi bật">
+        <div class="promo-list">
+            <div onclick="filterByPromo('all', 'Đang hiển thị: Toàn bộ menu ưu đãi thành viên', this)" class="promo-card active">
+                <img src="https://images.unsplash.com/photo-1558160074-4d7d8bdf4256?w=300&q=80" alt="Ưu đãi thành viên">
+                <span>Ưu đãi thành viên</span>
+                <small>Giảm 10% mọi đơn</small>
+            </div>
+            <div onclick="filterByPromo('tra', 'Đang lọc: Các món Trà mới mỗi ngày', this)" class="promo-card">
+                <img src="https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=300&q=80" alt="Trà mới mỗi ngày">
+                <span>Trà mới mỗi ngày</span>
+                <small>Ủ tươi mỗi sáng</small>
+            </div>
+            <div onclick="filterByPromo('combo', 'Đang lọc: Các món bán chạy & Combo tiết kiệm', this)" class="promo-card">
+                <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=300&q=80" alt="Combo đồ uống">
+                <span>Combo tiết kiệm</span>
+                <small>Mua 2 tặng Topping</small>
+            </div>
+            <div onclick="filterByPromo('nuoc-ep', 'Đang lọc: Nước ép trái cây tươi 100%', this)" class="promo-card">
+                <img src="https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=300&q=80" alt="Nước ép trái cây">
+                <span>Nước ép trái cây</span>
+                <small>Vitamin tự nhiên</small>
+            </div>
+            <div onclick="filterByPromo('dac-biet', 'Đang lọc: Dòng thức uống pha chế đặc biệt', this)" class="promo-card">
+                <img src="https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300&q=80" alt="Trà đặc biệt">
+                <span>Trà đặc biệt</span>
+                <small>Công thức độc quyền</small>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== THỰC ĐƠN CHÍNH ==================== -->
+    <main id="menu">
+        <h2 class="section-title">Thực Đơn Của Chúng Tôi</h2>
+        <p id="filterStatusText" class="text-center text-sm text-tea-green-500 font-medium mb-2">
+            Chọn món yêu thích để xem chi tiết nguyên liệu, tùy chỉnh đường đá hoặc thêm vào giỏ hàng
+        </p>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterMenu('all', this)">Tất cả món (8)</button>
+            <button class="filter-btn" onclick="filterMenu('tra', this)">Trà & Trà Sữa</button>
+            <button class="filter-btn" onclick="filterMenu('ca-phe', this)">Cà Phê</button>
+            <button class="filter-btn" onclick="filterMenu('nuoc-ep', this)">Nước Ép & Giải Khát</button>
+            <button class="filter-btn" onclick="filterMenu('dac-biet', this)">Món Đặc Biệt</button>
+        </div>
+
+        <div id="menuContainer" class="menu-list"></div>
+    </main>
+
+    <!-- ==================== MODAL CHI TIẾT SẢN PHẨM ==================== -->
+    <div id="productModal" class="modal-backdrop" onclick="handleBackdropClick(event)">
+        <div class="modal-box">
+            <div class="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-tea-green-50">
+                <span id="modalCategoryBadge" class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-tea-green-200 text-tea-green-900">
+                    Chi tiết thức uống
+                </span>
+                <button onclick="closeProductModal()" class="w-8 h-8 rounded-full bg-white hover:bg-red-50 text-gray-600 hover:text-red-500 flex items-center justify-center font-bold transition-colors shadow-sm">
+                    ✕
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <div class="rounded-2xl overflow-hidden h-64 md:h-72 shadow-md mb-4 relative">
+                        <img id="modalImg" src="" alt="" class="w-full h-full object-cover">
+                        <span id="modalHotBadge" class="nhan-hot hidden" style="top:12px; left:12px;">HOT</span>
+                    </div>
+                    <div class="bg-tea-green-50 rounded-xl p-3.5 border border-tea-green-100">
+                        <h4 class="text-xs font-bold uppercase text-tea-green-700 mb-1">Nguyên liệu & Hương vị:</h4>
+                        <p id="modalIngredients" class="text-xs text-gray-600 leading-relaxed"></p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col justify-between">
+                    <div>
+                        <h3 id="modalTitle" class="font-serif text-2xl font-bold text-tea-green-900 mb-1"></h3>
+                        <p id="modalDesc" class="text-sm text-gray-600 mb-3 leading-relaxed"></p>
+                        
+                        <div class="flex items-baseline gap-3 mb-4 pb-3 border-b border-gray-100">
+                            <span id="modalPrice" class="text-2xl font-extrabold text-red-600"></span>
+                            <span id="modalCalories" class="text-xs text-gray-400 font-medium"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-xs font-bold uppercase text-gray-700 mb-2">1. Chọn Size:</label>
+                            <div class="grid grid-cols-2 gap-2.5" id="sizeOptions">
+                                <div onclick="selectSize('M', 0, this)" class="option-pill selected text-center">
+                                    Size M (Tiêu chuẩn)
+                                </div>
+                                <div onclick="selectSize('L', 6000, this)" class="option-pill text-center">
+                                    Size L (+6.000đ)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-700 mb-1.5">2. Mức đường:</label>
+                                <select id="modalSugar" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-tea-green-500">
+                                    <option value="100% đường">100% đường (Chuẩn)</option>
+                                    <option value="70% đường">70% đường (Ít ngọt)</option>
+                                    <option value="50% đường">50% đường</option>
+                                    <option value="Không đường">0% (Không đường)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-700 mb-1.5">3. Mức đá:</label>
+                                <select id="modalIce" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-tea-green-500">
+                                    <option value="100% đá">100% đá (Chuẩn)</option>
+                                    <option value="70% đá">70% đá (Ít đá)</option>
+                                    <option value="Đá để riêng">Đá để riêng</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-xs font-bold uppercase text-gray-700 mb-2">4. Thêm Topping:</label>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <label class="flex items-center gap-2 p-2 border border-gray-200 rounded-lg cursor-pointer hover:bg-tea-green-50">
+                                    <input type="checkbox" value="Trân châu đen" data-price="5000" onchange="updateModalTotalPrice()" class="topping-checkbox accent-tea-green-700">
+                                    <span>Trân châu đen (+5k)</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 border border-gray-200 rounded-lg cursor-pointer hover:bg-tea-green-50">
+                                    <input type="checkbox" value="Thạch dừa" data-price="5000" onchange="updateModalTotalPrice()" class="topping-checkbox accent-tea-green-700">
+                                    <span>Thạch dừa (+5k)</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 border border-gray-200 rounded-lg cursor-pointer hover:bg-tea-green-50">
+                                    <input type="checkbox" value="Kem Cheese" data-price="8000" onchange="updateModalTotalPrice()" class="topping-checkbox accent-tea-green-700">
+                                    <span>Kem Cheese (+8k)</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 border border-gray-200 rounded-lg cursor-pointer hover:bg-tea-green-50">
+                                    <input type="checkbox" value="Trân châu trắng" data-price="5000" onchange="updateModalTotalPrice()" class="topping-checkbox accent-tea-green-700">
+                                    <span>Trân châu trắng (+5k)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-gray-100 flex items-center gap-3">
+                        <div class="flex items-center border border-gray-200 rounded-xl overflow-hidden">
+                            <button onclick="changeModalQty(-1)" class="px-3 py-2 bg-gray-50 hover:bg-gray-100 font-bold text-gray-700">-</button>
+                            <span id="modalQty" class="px-4 py-2 font-bold text-sm">1</span>
+                            <button onclick="changeModalQty(1)" class="px-3 py-2 bg-gray-50 hover:bg-gray-100 font-bold text-gray-700">+</button>
+                        </div>
+
+                        <button onclick="confirmAddToCartFromModal()" class="flex-1 bg-tea-green-700 hover:bg-tea-green-900 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md hover:shadow-lg flex justify-between items-center">
+                            <span>Thêm vào giỏ</span>
+                            <span id="modalTotalBtnPrice" class="bg-white/20 px-2.5 py-0.5 rounded-lg text-sm"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== NGĂN KÉO GIỎ HÀNG (CART DRAWER) ==================== -->
+    <div id="cartDrawerBackdrop" class="fixed inset-0 bg-black/50 z-[90] hidden" onclick="toggleCartDrawer(false)"></div>
+    <aside id="cartDrawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white z-[95] shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-5 bg-tea-green-900 text-white flex justify-between items-center">
+            <div>
+                <h3 class="font-serif text-xl font-bold">Giỏ Hàng Của Bạn</h3>
+                <p class="text-xs text-tea-green-200">Tea Station - Giao nhanh tại TP. Thủ Đức</p>
+            </div>
+            <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center">✕</button>
+        </div>
+
+        <div id="cartItemsList" class="flex-1 overflow-y-auto p-5 space-y-4"></div>
+
+        <div class="p-5 border-t border-gray-100 bg-tea-green-50">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-gray-600 font-semibold">Tổng thanh toán:</span>
+                <span id="cartTotalAmount" class="text-2xl font-extrabold text-red-600">0 VNĐ</span>
+            </div>
+            <button onclick="checkoutOrder()" class="w-full bg-tea-green-700 hover:bg-tea-green-900 text-white font-bold py-3.5 rounded-xl shadow-md transition-all">
+                Xác Nhận Đặt Hàng Ngay
+            </button>
+        </div>
+    </aside>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer id="contact" class="footer-wrapper">
+        <div class="footer-content">
+            <div class="contact-info">
+                <h3>Thông Tin Liên Hệ</h3>
+                <p>
+                    <strong>📍 Address:</strong>
+                    7/12 385 Tăng Nhơn Phú A, TP Thủ Đức
+                </p>
+                <p><strong>📞 SĐT:</strong> <a href="tel:0349145100" class="underline hover:text-tea-green-200">0349145100</a></p>
+                <p><strong>✉️ Gmail:</strong> <a href="mailto:minhtam9tatc@gmail.com" class="underline hover:text-tea-green-200">minhtam9tatc@gmail.com</a></p>
+                <p class="text-xs text-gray-400 mt-4">© 2026 Tea Station. Mở cửa từ 07:30 - 22:30 mỗi ngày.</p>
+            </div>
+
+            <div class="map-container">
+                <iframe
+                    src="https://maps.google.com/maps?q=385%20T%C4%83ng%20Nh%C6%A1n%20Ph%C3%BA%20A%2C%20TP%20Th%E1%BB%A7%20%C4%90%E1%BB%A9c&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                    title="Bản đồ Tea Station"
+                    allowfullscreen
+                    loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toast-container"></div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        const products = [
+            {
+                id: 1,
+                name: "Hồng Trà Sữa",
+                price: 35000,
+                category: ["tra", "combo"],
+                isHot: true,
+                badgeText: "HOT",
+                img: "https://images.unsplash.com/photo-1558160074-4d7d8bdf4256?w=600&q=80",
+                shortDesc: "Hồng trà ủ lạnh đậm vị hòa quyện cùng sữa tươi béo ngậy thơm lừng.",
+                fullDesc: "Món Best Seller tại Tea Station! Lá hồng trà thượng hạng được ủ ở nhiệt độ chuẩn giúp giữ trọn hương thơm tự nhiên, không bị chát, kết hợp cùng bột sữa béo nhẹ tạo hậu vị ngọt thanh.",
+                ingredients: "Cốt hồng trà Assam ủ tươi, kem béo thực vật, sữa đặc, trân châu hoàng kim mềm dẻo.",
+                calories: "280 kcal"
+            },
+            {
+                id: 2,
+                name: "Cà Phê Đen Đá",
+                price: 25000,
+                category: ["ca-phe", "combo"],
+                isHot: false,
+                img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=600&q=80",
+                shortDesc: "Cà phê hạt Robusta rang mộc nguyên chất, đậm đà tỉnh táo tức thì.",
+                fullDesc: "Được chiết xuất từ 100% hạt cà phê Robusta Tây Nguyên rang mộc, mang lại vị đắng dịu tự nhiên, hương thơm nồng nàn và giúp bạn tập trung năng lượng suốt cả ngày.",
+                ingredients: "100% Cà phê Robusta nguyên chất pha phin truyền thống, đường tinh luyện, đá viên tinh khiết.",
+                calories: "45 kcal"
+            },
+            {
+                id: 3,
+                name: "Cô Ca Cô La Tươi Mát",
+                price: 30000,
+                category: ["nuoc-ep"],
+                isHot: false,
+                img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&q=80",
+                shortDesc: "Nước ngọt có gas ướp lạnh kết hợp lát chanh tươi sảng khoái.",
+                fullDesc: "Thức uống giải khát cực đã cho ngày nắng nóng! Coca-Cola chính hãng được phục vụ kèm đá viên lâu tan và một lát chanh vàng tươi giúp cân bằng vị ngọt.",
+                ingredients: "Coca-Cola ướp lạnh, lát chanh tươi vàng, lá bạc hà trang trí.",
+                calories: "140 kcal"
+            },
+            {
+                id: 4,
+                name: "Nước Ép Cam Nguyên Chất",
+                price: 30000,
+                category: ["nuoc-ep", "combo"],
+                isHot: true,
+                badgeText: "TƯƠI 100%",
+                img: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=600&q=80",
+                shortDesc: "Cam vàng tươi vắt nguyên chất 100%, giàu Vitamin C tăng đề kháng.",
+                fullDesc: "Được ép trực tiếp từ những quả cam tươi mọng nước ngay khi bạn gọi món. Không sử dụng hương liệu hay chất bảo quản, giữ trọn lượng Vitamin C tự nhiên.",
+                ingredients: "3 trái cam tươi vắt nguyên chất, một chút mật ong rừng (tùy chọn).",
+                calories: "110 kcal"
+            },
+            {
+                id: 5,
+                name: "Trà Đào Cam Sả",
+                price: 38000,
+                category: ["tra", "dac-biet"],
+                isHot: true,
+                badgeText: "BEST SELLER",
+                img: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80",
+                shortDesc: "Trà thanh mát quyện hương sả tươi, cam vàng và miếng đào giòn ngọt.",
+                fullDesc: "Sự kết hợp hoàn hảo giữa cốt trà lài thanh tao, hương thơm nồng ấm của sả cây đập dập, vị chua dịu của cam vàng và những miếng đào ngâm giòn sần sật.",
+                ingredients: "Trà lài ủ lạnh, sả tươi nấu syrup, cam vàng cắt lát, 3 miếng đào ngâm giòn.",
+                calories: "165 kcal"
+            },
+            {
+                id: 6,
+                name: "Matcha Latte Kem Cheese",
+                price: 42000,
+                category: ["tra", "dac-biet"],
+                isHot: false,
+                img: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&q=80",
+                shortDesc: "Trà xanh Matcha Nhật Bản phủ lớp kem phô mai mặn béo sánh mịn.",
+                fullDesc: "Bột Matcha Uji Nhật Bản được đánh bông thủ công cùng sữa tươi thanh trùng, bên trên phủ lớp Macchiato Kem Cheese mặn nhẹ cực kỳ bắt vị.",
+                ingredients: "Bột Matcha Nhật Bản, sữa tươi Dalatmilk, lớp kem phô mai đánh bông.",
+                calories: "310 kcal"
+            },
+            {
+                id: 7,
+                name: "Bạc Xỉu Cốt Dừa",
+                price: 32000,
+                category: ["ca-phe", "dac-biet"],
+                isHot: false,
+                img: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=80",
+                shortDesc: "Sữa tươi hòa quyện cốt dừa béo thơm cùng chút cà phê phin dịu nhẹ.",
+                fullDesc: "Dành cho những ai thích hương thơm cà phê nhưng không uống được quá đắng. Lớp sữa dừa sánh mịn quyện với cà phê tạo cảm giác thơm béo khó cưỡng.",
+                ingredients: "Cà phê phin nguyên chất, sữa đặc, sữa tươi, cốt dừa tươi, dừa khô giòn.",
+                calories: "260 kcal"
+            },
+            {
+                id: 8,
+                name: "Trà Oolong Nhãn Sen",
+                price: 39000,
+                category: ["tra", "dac-biet"],
+                isHot: false,
+                img: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&q=80",
+                shortDesc: "Trà Oolong nướng thơm lừng kết hợp nhãn lồng giòn và hạt sen bùi.",
+                fullDesc: "Thức uống thanh nhiệt chuẩn vị truyền thống nhưng được pha chế theo phong cách hiện đại. Hạt sen ninh mềm bùi kết hợp cùng cùi nhãn giòn ngọt.",
+                ingredients: "Cốt trà Oolong cao sơn, nhãn lồng tươi, hạt sen Huế nấu đường phèn.",
+                calories: "180 kcal"
+            }
+        ];
+
+        let currentCategory = 'all';
+        let currentModalProduct = null;
+        let selectedSize = 'M';
+        let selectedSizeExtra = 0;
+        let modalQuantity = 1;
+        let cart = [];
+
+        function formatVND(amount) {
+            return amount.toLocaleString('vi-VN') + ' VNĐ';
+        }
+
+        function renderMenu(productList) {
+            const container = document.getElementById('menuContainer');
+            if (productList.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-tea-green-100">
+                        <p class="text-lg font-semibold text-gray-600">Không tìm thấy thức uống phù hợp 😢</p>
+                        <button onclick="filterMenu('all', document.querySelector('.filter-btn'))" class="mt-3 px-4 py-2 bg-tea-green-700 text-white text-sm rounded-lg">Xem lại toàn bộ menu</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = productList.map(item => `
+                <div class="drink-item">
+                    ${item.isHot ? `<div class="nhan-hot">${item.badgeText || 'HOT'}</div>` : ''}
+                    
+                    <div class="drink-img-wrapper" onclick="openProductModal(${item.id})">
+                        <img src="${item.img}" alt="${item.name}">
+                        <div class="quick-view-overlay">
+                            <span>🔍 Xem chi tiết</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="drink-name" onclick="openProductModal(${item.id})">${item.name}</div>
+                        <p class="drink-short-desc">${item.shortDesc}</p>
+                    </div>
+
+                    <div>
+                        <div class="drink-price">${formatVND(item.price)}</div>
+                        <div class="card-actions">
+                            <button class="btn-detail" onclick="openProductModal(${item.id})">
+                                Chi tiết
+                            </button>
+                            <button class="btn-add-cart" onclick="quickAddToCart(${item.id})">
+                                + Thêm giỏ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterMenu(category, btnElement) {
+            currentCategory = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            if (btnElement) btnElement.classList.add('active');
+
+            const filtered = category === 'all'
+                ? products
+                : products.filter(p => p.category.includes(category));
+
+            renderMenu(filtered);
+        }
+
+        function filterByPromo(category, statusMessage, cardElement) {
+            document.querySelectorAll('.promo-card').forEach(card => card.classList.remove('active'));
+            if (cardElement) cardElement.classList.add('active');
+
+            document.getElementById('filterStatusText').textContent = statusMessage;
+            filterMenu(category, null);
+
+            document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+            showToast(`✨ ${statusMessage}`);
+        }
+
+        function handleSearch(keyword) {
+            const cleanKeyword = keyword.trim().toLowerCase();
+            const filtered = products.filter(p =>
+                p.name.toLowerCase().includes(cleanKeyword) ||
+                p.shortDesc.toLowerCase().includes(cleanKeyword)
+            );
+            renderMenu(filtered);
+        }
+
+        function openProductModal(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            currentModalProduct = product;
+            selectedSize = 'M';
+            selectedSizeExtra = 0;
+            modalQuantity = 1;
+
+            document.getElementById('modalImg').src = product.img;
+            document.getElementById('modalImg').alt = product.name;
+            document.getElementById('modalTitle').textContent = product.name;
+            document.getElementById('modalDesc').textContent = product.fullDesc;
+            document.getElementById('modalIngredients').textContent = product.ingredients;
+            document.getElementById('modalPrice').textContent = formatVND(product.price);
+            document.getElementById('modalCalories').textContent = `🔥 Năng lượng: ~${product.calories}`;
+            document.getElementById('modalQty').textContent = modalQuantity;
+
+            const hotBadge = document.getElementById('modalHotBadge');
+            if (product.isHot) {
+                hotBadge.textContent = product.badgeText || 'HOT';
+                hotBadge.classList.remove('hidden');
+            } else {
+                hotBadge.classList.add('hidden');
+            }
+
+            const sizePills = document.querySelectorAll('#sizeOptions .option-pill');
+            sizePills.forEach((pill, index) => {
+                pill.classList.toggle('selected', index === 0);
+            });
+            document.querySelectorAll('.topping-checkbox').forEach(cb => cb.checked = false);
+            document.getElementById('modalSugar').selectedIndex = 0;
+            document.getElementById('modalIce').selectedIndex = 0;
+
+            updateModalTotalPrice();
+
+            document.getElementById('productModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        function handleBackdropClick(event) {
+            if (event.target.id === 'productModal') {
+                closeProductModal();
+            }
+        }
+
+        function selectSize(size, extraPrice, element) {
+            selectedSize = size;
+            selectedSizeExtra = extraPrice;
+            document.querySelectorAll('#sizeOptions .option-pill').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            updateModalTotalPrice();
+        }
+
+        function changeModalQty(delta) {
+            modalQuantity = Math.max(1, modalQuantity + delta);
+            document.getElementById('modalQty').textContent = modalQuantity;
+            updateModalTotalPrice();
+        }
+
+        function updateModalTotalPrice() {
+            if (!currentModalProduct) return;
+            let toppingTotal = 0;
+            document.querySelectorAll('.topping-checkbox:checked').forEach(cb => {
+                toppingTotal += Number(cb.dataset.price);
+            });
+
+            const unitPrice = currentModalProduct.price + selectedSizeExtra + toppingTotal;
+            const totalPrice = unitPrice * modalQuantity;
+            document.getElementById('modalTotalBtnPrice').textContent = formatVND(totalPrice);
+        }
+
+        function confirmAddToCartFromModal() {
+            if (!currentModalProduct) return;
+
+            const toppings = [];
+            let toppingPrice = 0;
+            document.querySelectorAll('.topping-checkbox:checked').forEach(cb => {
+                toppings.push(cb.value);
+                toppingPrice += Number(cb.dataset.price);
+            });
+
+            const sugar = document.getElementById('modalSugar').value;
+            const ice = document.getElementById('modalIce').value;
+            const unitPrice = currentModalProduct.price + selectedSizeExtra + toppingPrice;
+
+            const cartItem = {
+                cartItemId: Date.now(),
+                name: currentModalProduct.name,
+                img: currentModalProduct.img,
+                size: selectedSize,
+                sugar,
+                ice,
+                toppings,
+                unitPrice,
+                qty: modalQuantity
+            };
+
+            cart.push(cartItem);
+            updateCartUI();
+            closeProductModal();
+            showToast(`🛒 Đã thêm ${modalQuantity}x "${currentModalProduct.name}" (Size ${selectedSize}) vào giỏ!`);
+        }
+
+        function quickAddToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            cart.push({
+                cartItemId: Date.now(),
+                name: product.name,
+                img: product.img,
+                size: 'M',
+                sugar: '100% đường',
+                ice: '100% đá',
+                toppings: [],
+                unitPrice: product.price,
+                qty: 1
+            });
+
+            updateCartUI();
+            showToast(`✅ Đã thêm "${product.name}" vào giỏ hàng!`);
+        }
+
+        function toggleCartDrawer(open) {
+            const drawer = document.getElementById('cartDrawer');
+            const backdrop = document.getElementById('cartDrawerBackdrop');
+            if (open) {
+                backdrop.classList.remove('hidden');
+                drawer.classList.remove('translate-x-full');
+            } else {
+                backdrop.classList.add('hidden');
+                drawer.classList.add('translate-x-full');
+            }
+        }
+
+        function updateCartUI() {
+            const countBadge = document.getElementById('cartCountBadge');
+            const listContainer = document.getElementById('cartItemsList');
+            const totalAmountEl = document.getElementById('cartTotalAmount');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            countBadge.textContent = totalItems;
+
+            if (cart.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-14 text-gray-400">
+                        <p class="text-4xl mb-2">🧋</p>
+                        <p class="text-sm font-medium">Giỏ hàng của bạn đang trống.</p>
+                        <p class="text-xs mt-1">Hãy chọn món thức uống yêu thích nhé!</p>
+                    </div>
+                `;
+                totalAmountEl.textContent = '0 VNĐ';
+                return;
+            }
+
+            let grandTotal = 0;
+            listContainer.innerHTML = cart.map((item, idx) => {
+                const itemTotal = item.unitPrice * item.qty;
+                grandTotal += itemTotal;
+                const toppingStr = item.toppings.length > 0 ? `• Topping: ${item.toppings.join(', ')}` : '';
+
+                return `
+                    <div class="flex gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50/70 items-center">
+                        <img src="${item.img}" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-sm text-tea-green-900 truncate">${item.name} (Size ${item.size})</h4>
+                            <p class="text-xs text-gray-500">${item.sugar} • ${item.ice}</p>
+                            ${toppingStr ? `<p class="text-xs text-tea-green-700 font-medium">${toppingStr}</p>` : ''}
+                            <p class="text-sm font-extrabold text-red-600 mt-1">${formatVND(itemTotal)}</p>
+                        </div>
+                        <div class="flex flex-col items-end gap-2">
+                            <button onclick="removeCartItem(${idx})" class="text-xs text-gray-400 hover:text-red-500">Xóa</button>
+                            <div class="flex items-center border rounded-lg bg-white">
+                                <button onclick="changeCartItemQty(${idx}, -1)" class="px-2 py-0.5 text-xs font-bold">-</button>
+                                <span class="px-2 text-xs font-bold">${item.qty}</span>
+                                <button onclick="changeCartItemQty(${idx}, 1)" class="px-2 py-0.5 text-xs font-bold">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            totalAmountEl.textContent = formatVND(grandTotal);
+        }
+
+        function changeCartItemQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function removeCartItem(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function checkoutOrder() {
+            if (cart.length === 0) {
+                showToast('⚠️ Giỏ hàng đang trống, vui lòng chọn món trước!');
+                return;
+            }
+            showToast('🎉 Đặt hàng thành công! Tea Station sẽ liên hệ xác nhận ngay.');
+            cart = [];
+            updateCartUI();
+            toggleCartDrawer(false);
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast-msg';
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 2800);
+        }
+
+        renderMenu(products);
+        updateCartUI();
+    </script>
+</body>
+</html>
